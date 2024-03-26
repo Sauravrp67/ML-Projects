@@ -171,3 +171,93 @@ class Raw_data_validation:
                         Revisions: None
         
         """
+
+        try: 
+            path = 'Training_Raw_files_validated/'
+            if os.path.isdir(path + 'Bad_Raw'):
+                shutil.rmtree(path + 'Bad_Raw')
+                file = open('Training_Logs/GeneralLog.txt', 'a+')
+                self.logger.log(file,"BadRaw Directory Deleted Sucessfully!!!")
+                file.close()
+        except OSError:
+            file = open('Training_Logs/GeneralLog.txt', 'a+')
+            self.logger.log(file, "Error while Deleting Directory : %s" %s)
+            file.close()
+            raise OSError
+        
+    def moveBadFilesToArchiveBad(self):
+        """
+                    Method Name : moveBadFilesToArchiveBad
+                    Description: This method deletes the directory made to store the Bad Data after moving the data in an archive folder. We archive the bad
+                                    files to send them back to the client for invalid data issues.
+
+                    Output: None
+                    On failure: OSError
+
+                    Written By: Saurav Raj Paudel
+
+                    Revision: None
+        
+        """
+        now = datetime.now()
+        date = now.date()
+        time = now.strftime("%H%M%S")
+
+        try:
+            source = 'Training_Raw_files_validated/Bad_Raw'
+            if os.path.isdir(source):
+                path = "TrainingArchiveBadData"
+                if not os.path.isdir(path):
+                    os.makedirs(path)
+
+                dest = 'TrainingArchiveBadData/BadData_' + str(date)+ "_" + str(time)
+                if not os.path.isdir(dest):
+                    os.makedirs(dest)
+
+                files = os.listdir(source)
+                for f in files:
+                    if f not in os.listdir(dest):
+                        shutil.move(source + f, dest)
+                file = open("Training_Logs/GeneralLog.txt", 'a+')
+                self.logger.log(file, "Bad files moved to archive")
+                path = 'Training_Raw_files_validated/'
+                if os.path.isdir(path + 'Bad_Raw/'):
+                    shutil.rmtree(path + 'Bad_Raw/')
+                self.logger.log(file, "Bad Raw Data Folder Deleted Sucessfully!!")
+                file.close()
+
+        except Exception as e:
+            file = open("Training_Logs/GeneralLog.txt", 'a+')
+            self.logger.log(file, "Error while moving bad files to archive:: %s" %e)
+            file.close()
+            raise e
+        
+    def validationFileNameRaw(self,regex,LengthOfDataStampInFile, LengthOfTimeStampInFile):
+        """
+                Method Name: validationFileNameRaw
+                Description: This function validates the name of the training csv files as per given name in the schema!
+                                 Regex pattern is used to do the validation.If name format do not match the file is moved
+                                 to Bad Raw Data folder else in Good raw data.
+                Output: None
+                On Failure: Exception
+
+                Written By: Saurav Raj Paudel
+                Version: 1.0
+                Revision: None
+        
+        
+        """
+        #pattern = "['Wafer']+['\_'']+[\d_]+[\d]+\.csv"
+        # Delete the directories for good and bad data in case last run was unsucessful and folders were not deleted.
+        self.deleteExistingBadDataTrainingFolder()
+        self.deleteExistingGoodDataTrainingFolder()
+        #create new directories
+        self.createDirectoryForGoodBadRawData()
+        onlyfiles = [f for f in listdir(self.Batch_Directory)]
+
+        # try:
+        #     f = open("Training_Logs/nameValidationLog.txt",'a+')
+        #     for filename in onlyfiles:
+        #         if (re.match(regex, filename)):
+        #             splitAtDot = re.split('.csv', filename)
+
