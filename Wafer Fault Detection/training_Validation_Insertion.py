@@ -5,10 +5,18 @@ from DataTransfrom_Training.DataTransformation import dataTransform
 from application_logging import logger
 
 class train_validation:
-    def __init__(self):
-        pass
+    def __init__(self,path):
+        self.raw_data = Raw_data_validation(path)
+        self.dataTransform = dataTransform()
+        self.dBOperation = dBOperation()
+        self.file_object = open("Training_Logs/Training_Main_Log.txt", 'a+')
+        self.log_writer = logger.App_Logger()
 
 
     def train_validation(self):
-        pass
+        try:
+            self.log_writer.log(self.file_object, "Start of Validation on files!!")
+            #extracting values from predictin shcema
+            LengthOfDateStampInFile, LengthOfTimeStampInFile, column_names, noofcolumns = self.raw_data.valuesFromSchema()
+        
     
