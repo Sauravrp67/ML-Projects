@@ -149,5 +149,53 @@ class dBOperation:
         conn.close()
         log_file.close()
 
+    def selectingDatafromtableintocsv(self, Database):
+        """
+                Method Name: selectingDatafromtableintocsv
+                Description: This method exports the data in GoodData table as a CSV file. in a given location.
+                                above created .
+                Output: None
+                On Failure: Raise Exception
+
+                Written By: Saurav Raj Paudel
+                Version: 1.0
+                Revisions: None
+
+        """
+        self.fileFromDb = 'Training_FileFromDB/'
+        self.fileName = 'InputFile.csv'
+        log_file = open("Training_Logs/ExportToCsv.txt", 'a+')
+        try:
+            conn = self.dataBaseConnection(Database)
+            sqlSelect = "SELECT * FROM Good_Raw_Data"
+            cursor = conn.cursor()
+            cursor.execute(sqlSelect)
+
+            results = cursor.fetchall()
+
+            #Get the headers of the csv file
+            headers = [i[0] for i in cursor.description]
+
+            #Make the csv output dicrectory
+            if not os.path.isdir(self.fileFromDb):
+                os.makedirs(self.fileFromDb)
+            # Open CSV file for writing.
+            csvFile = csv.writer(open(self.fileFromDb + self.fileName, 'w', newline = ''),delimiter = ',', lineterminator='\r\n', quoting = csv.QUOTE_ALL, escapechar = '\\')
+
+            # Add the headers and data to the CSV file.
+            csvFile.writerow(headers)
+            csvFile.writerows(results)
+
+            self.logger.log(log_file, "File exported successfully!!!")
+            log_file.close()
+
+        except Exception as e:
+            self.logger.log(log_file, "File exporting failed. Error : %s" %e)
+            log_file.close()
+            
+
+
+
+
 
 

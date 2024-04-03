@@ -37,7 +37,27 @@ class train_validation:
 
             self.log_writer.log(self.file_object, "Creating Training_Database and tables on the basis of given schema!!!")
             # create database with given name, if present open the connection! Create table with columns given in schema
+            self.dBOperation.createTableDb("Training")
+            self.log_writer.log(self.file_object, "Table Creation Completed!!!")
+            self.log_writer.log(self.file_object, "Insertion of GoodData into Table of the database sarted!!!")
 
+            self.dBOperation.insertIntoTableGoodData('Training')
+            self.log_writer.log(self.file_object,"Insertion in Table Completed")
+            self.log_writer.log(self.file_object, "Moving bad files to archive and deleting Bad_Data Folder!!!")
+            # Move bad files to archive folder
+            self.raw_data.moveBadFilesToArchiveBad()
+            self.log_writer.log(self.file_object, "Bad filed moved to Archieve!! Bad folder deleted")
+            self.log_writer.log(self.file_object, "Deleting Good data folder")
+
+            # Delete the Good data folder after moving the good data into table
+            self.raw_data.deleteExistingGoodDataTrainingFolder()
+            self.log_writer.log(self.file_object, "Good Data folder deleted")
+            # export data in table to csvfile
+            self.dBOperation.selectingDatafromtableintocsv('Training')
+            self.file_object.close()
+
+        except Exception as e:
+            raise e
             
         
     
