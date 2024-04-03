@@ -32,8 +32,19 @@ def trainRouteClient():
 
             train_valObj = train_validation(path) # object initialization
 
+            #What happens during this step:
+            # : First we validate if the names of the csv files are in accord with the naming scheme
+            # : Second we check if the number of columns of each training csv match the schema
+            # : We then check if any columns in the training csv files have all values NULL
+            # : In each of the validation step, we put the files that agrees with the schema into GoodData Folder and those which don't into BadData Folder
+            # : We then perform data transformation in the csv files that are present in the GoodData Folder
+            # : Next task is to put all the Data Instances present inside each training CSV files in GoodData Folder Into a database
+            # : Then we extract all the values from the database into a single csv file which is used for training
+            # : After all the data have been moved to the, we delete the GoodData Folder
+            # : We move BadData Folder into BadData Archive folder, and then delete the BadData Folder
+                
             train_valObj.train_validation() #calling the training_validation function
-
+            
             trainModelObj = trainModel() #object initialization
 
             trainModelObj.trainingModel()
