@@ -1,4 +1,3 @@
-# This library is used for making simple HTTPs request by the web browsers to this framework.
 from wsgiref import simple_server
 from flask import Flask, request, render_template
 from flask import Response
@@ -7,6 +6,11 @@ from flask_cors import CORS, cross_origin
 from training_Validation_Insertion import train_validation
 from trainingModel import trainModel
 import flask_monitoringdashboard as dashboard
+from prediction_validation_Insertion import pred_validation
+from predictFromModel import prediction
+import json
+
+
 
 os.putenv('LANG', 'en_US.UTF-8')
 os.putenv('LC_ALL', 'en_US.UTF-8')
@@ -21,7 +25,7 @@ def home():
     return render_template('index.html')
 
 
-@app.route("/",methods = ["POST"])
+@app.route("/train",methods = ["POST"])
 @cross_origin()
 
 def trainRouteClient():
@@ -58,6 +62,34 @@ def trainRouteClient():
     except Exception as e:
         return Response("Error Occurred! %s" %e)
     return Response("Training Successful!!!")
+
+
+
+@app.route("/predict", methods=["POST"])
+@cross_origin
+
+def predictRouteClient():
+    try:
+        if request.json is not None:
+            path = request.form['filepath']
+
+            pred_val = pred_validation(path) #object initialization
+
+            pred_val.prediction_validation() #calling the prediction_validation function
+
+            pred = prediction(path) #object initialization
+
+            # predicting for dataset present in database
+            path,json_predictions = pred.predictionFromModel()
+            return Response("Prediction File created at !!!"  +str(path) +'and few of the predictions are '+str(json.loads(json_predictions) ))
+        else:
+            print('Nothing Matched')
+    except ValueError:
+        return Response("Error Occurred! %s" %ValueError)
+    except KeyError:
+        return Response("Error Occurred! %s" %KeyError)
+    except Exception as e:
+        return Response("Error Occurred! %s" %e)
 
 port = int(os.getenv("PORT", 5000))
 
