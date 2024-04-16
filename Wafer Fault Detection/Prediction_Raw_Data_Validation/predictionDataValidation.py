@@ -75,4 +75,107 @@ class Prediction_Data_validation:
         return LengthOfDateStampInFile, LengthOfTimeStampInFile, column_names, NumberofColumns
 
 
+    def manualRegexCreation(self):
+
+        """
+                                      Method Name: manualRegexCreation
+                                      Description: This method contains a manually defined regex based on the "FileName" given in "Schema" file.
+                                                  This Regex is used to validate the filename of the prediction data.
+                                      Output: Regex pattern
+                                      On Failure: None
+
+                                       Written By: Saurav Raj Paudel
+                                      Version: 1.0
+                                      Revisions: None
+
+                                              """
+        regex = "['wafer']+['\_'']+[\d_]+[\d]+\.csv"
+        return regex
     
+
+    def createDirectoryForGoodBadRawData(self):
+
+        """
+                Method Name: createDirectoryForGoodBadRawData
+                Description: This method creates directories to store the Good Data and Bad Data
+                            after validating the prediction data.
+
+                Output: None
+                On Failure: OSError
+
+                Written By: Saurav Raj Paudel
+                Version: 1.0
+                Revisions: None
+
+        """
+        try:
+            path = os.path.join("Prediction_Raw_Files_Validated/", "Good_Raw/")
+            if not os.path.isdir(path):
+                os.makedirs(path)
+            path = os.path.join("Prediction_Raw_Files_Validated/", "Bad_Raw/")
+            if not os.path.isdir(path):
+                os.makedirs(path)
+
+        except OSError as ex:
+            file = open("Prediction_Logs/GeneralLog.txt", 'a+')
+            self.logger.log(file,"Error while creating Directory %s:" % ex)
+            file.close()
+            raise OSError
+
+    def deleteExistingGoodDataTrainingFolder(self):
+        """
+                    Method Name: deleteExistingGoodDataTrainingFolder
+                    Description: This method deletes the directory made to store the Good Data
+                                after loading the data in the table. Once the good files are
+                                loaded in the DB,deleting the directory ensures space optimization.
+                    Output: None
+                    On Failure: OSError
+
+                    Written By: Saurav Raj Paudel
+                    Version: 1.0
+                    Revisions: None
+
+        """
+        try:
+            path = 'Prediction_Raw_Files_Validated/'
+            # if os.path.isdir("ids/" + userName):
+            # if os.path.isdir(path + 'Bad_Raw/'):
+            #     shutil.rmtree(path + 'Bad_Raw/')
+            if os.path.isdir(path + 'Good_Raw/'):
+                shutil.rmtree(path + 'Good_Raw/')
+                file = open("Prediction_Logs/GeneralLog.txt", 'a+')
+                self.logger.log(file,"GoodRaw directory deleted successfully!!!")
+                file.close()
+        except OSError as s:
+            file = open("Prediction_Logs/GeneralLog.txt", 'a+')
+            self.logger.log(file,"Error while Deleting Directory : %s" %s)
+            file.close()
+            raise OSError
+        
+
+    def deleteExistingBadDataTrainingFolder(self):
+
+        """
+            Method Name: deleteExistingBadDataTrainingFolder
+            Description: This method deletes the directory made to store the bad Data.
+            Output: None
+            On Failure: OSError
+
+            Written By: Saurav Raj Paudel
+            Version: 1.0
+            Revisions: None
+
+        """
+
+        try:
+            path = 'Prediction_Raw_Files_Validated/'
+            if os.path.isdir(path + 'Bad_Raw/'):
+                shutil.rmtree(path + 'Bad_Raw/')
+                file = open("Prediction_Logs/GeneralLog.txt", 'a+')
+                self.logger.log(file,"BadRaw directory deleted before starting validation!!!")
+                file.close()
+        except OSError as s:
+            file = open("Prediction_Logs/GeneralLog.txt", 'a+')
+            self.logger.log(file,"Error while Deleting Directory : %s" %s)
+            file.close()
+            raise OSError
