@@ -78,7 +78,23 @@ class trainModel():
 
                 x_train, x_test, y_train, y_test = train_test_split(cluster_features, cluster_label, test_size=1 / 3, random_state=355)
 
+                model_finder=tuner.Model_Finder(self.file_object,self.log_writer) # object initialization
 
+                #getting the best model for each of the clusters
+                best_model_name,best_model=model_finder.get_best_model(x_train,y_train,x_test,y_test)
+
+                #saving the best model to the directory.
+                file_op = file_methods.File_Operation(self.file_object,self.log_writer)
+                save_model=file_op.save_model(best_model,best_model_name+str(i))
+            
+            # logging the successful Training
+            self.log_writer.log(self.file_object, 'Successful End of Training')
+            self.file_object.close()
 
         except Exception as e:
-            raise Exception()
+
+            # logging the unsuccessful Training
+            self.log_writer.log(self.file_object, 'Unsuccessful End of Training')
+            self.file_object.close()
+
+            raise Exception
