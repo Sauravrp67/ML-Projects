@@ -12,6 +12,10 @@ from application_logging import logger
 from data_ingestion import data_loader
 from data_preprocessing import preprocessing
 from data_preprocessing import clustering
+from best_model_finder import tuner
+from sklearn.model_selection import train_test_split
+from file_operations import file_methods
+from application_logging import logger
 
 
 
@@ -49,6 +53,30 @@ class trainModel():
             cols_to_drop=preprocessor.get_columns_with_zero_std_deviation(X)
 
             X=preprocessor.remove_columns(X,cols_to_drop)
+
+            """ Applying the clustering approach"""
+
+            kmeans=clustering.KMeansClustering(self.file_object,self.log_writer) # object initialization.
+            number_of_clusters=kmeans.elbow_plot(X)  #  using the elbow plot to find the number of optimum clusters
+
+            # Divide the data into clusters
+            X=kmeans.create_clusters(X,number_of_clusters)
+
+            #create a new column in the dataset consisting of the corresponding cluster assignments.
+            X['Labels']=Y
+
+            # getting the unique clusters from our dataset
+            list_of_clusters=X['Cluster'].unique()
+
+            """Parsing all the clusters and looking for the best ML algorithm to fit on individual cluster"""
+
+            for i in list_of_clusters:
+                cluster_data = X[X['Cluster'] == i]
+
+                cluster_features=cluster_data.drop(['Labels','Cluster'],axis=1)
+                cluster_label= cluster_data['Labels']
+
+                x_train, x_test, y_train, y_test = train_test_split(cluster_features, cluster_label, test_size=1 / 3, random_state=355)
 
 
 
