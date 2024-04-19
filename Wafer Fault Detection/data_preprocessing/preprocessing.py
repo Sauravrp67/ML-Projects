@@ -114,10 +114,29 @@ class Preprocessor:
             """
                 Method Name: impute_missing_values
 
-                Description:
-                Output:
+                Description: This method replaces all the missing values in the Dataframe using KNN imputer
+                Output: A Dataframe which has all the missing values imputed.   
+                On failure: Raises Exception
+
+                Written By: iNeuron Intelligence
+                VersionL 1.0
+                Revisions:None
 
             """
+            self.logger_object.log(self.file_object, "Entered the impute_missing_values method of the preprocessor class")
+            self.data = data
+            try:
+                imputer = KNNImputer(n_neighbors=3, weights = 'uniform',missing_values = np.nan)
+                self.new_array = imputer.fit_transform(self.data)#Impute the missing values
+                # Convert the nd-array returned in the step above to a DataFrame
+                self.new_data = pd.DataFrame(data=self.new_array,columns = self.data.columns)
+                self.logger_object.log(self.file_object, 'Imputing missing values Successful. Exited the impute_missing_values method of the preprocessor class')
+                return self.new_data
+            except Exception as e:
+                self.logger_object.log(self.file_object, 'Exception occured in impute_missing_values method of the Preprocessor class. Exception message: ' + str(e))
+                self.logger_object.log(self.file_object,'Imputing missing valued failed.Exited the impute_missing_values method of the Preprocessor class')
+                raise Exception()
+            
 
 
     
