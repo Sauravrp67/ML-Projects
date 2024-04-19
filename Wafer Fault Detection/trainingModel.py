@@ -24,6 +24,7 @@ class trainModel():
 
 
     def trainingModel(self):
+        # Logging the start of the training
         self.log_writer.log(self.file_object, "Start of training")
 
         try:
@@ -33,6 +34,23 @@ class trainModel():
 
             """doing the data preprocessing"""
 
-            preprocessor = preprocessing.Preprocessor(self.file_object, self.log_writer)
+            preprocessor=preprocessing.Preprocessor(self.file_object,self.log_writer)
+            data=preprocessor.remove_columns(data,['Wafer']) # remove the unnamed column as it doesn't contribute to prediction.
+
+            X,Y=preprocessor.separate_label_feature(data,label_column_name='Output')
+
+            # check if missing values are present in the dataset
+            is_null_present=preprocessor.is_null_present(X)
+
+            # if missing values are there, replace them appropriately.
+            if(is_null_present):
+                X=preprocessor.impute_missing_values(X) # missing value imputation
+
+            cols_to_drop=preprocessor.get_columns_with_zero_std_deviation(X)
+
+            X=preprocessor.remove_columns(X,cols_to_drop)
+
+
+
         except Exception as e:
             raise Exception()
