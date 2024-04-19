@@ -137,6 +137,28 @@ class Preprocessor:
                 self.logger_object.log(self.file_object,'Imputing missing valued failed.Exited the impute_missing_values method of the Preprocessor class')
                 raise Exception()
             
+    def get_columns_with_zero_std_deviation(self,data):
+        """
+                    Method Name: get_columns_with_zero_std_deviation
+                    Description: This method finds out the columns which have a standard deviation of zero.
+                    Output: List of the columns with standard deviation of zero
+                    On Failure: Raise Exception
+        """
+        self.logger_object.log(self.file_object, "Entered get_columns_with_zero_std_deviation method of the preprocessor class")
+        self.columns = data.columns
+        self.data_n = data.describe()
+        self.col_to_drop = []
+
+        try:
+            for x in self.columns:
+                if (self.data_n[x]['std'] == 0):
+                    self.col_to_drop.append(x)
+                self.logger_object.log(self.file_object, "Column search for Standard Deviation of Zero Sucessful. Exiting the method")
+                return self.col_to_drop
+        except Exception as e:
+            self.logger_object.log(self.file_object, "Exception occured in get_columns_with_zero_std_deviation method of the Preprocessor class. Exception message: "+ str(e))
+            self.logger_object.log(self.file_object, 'Column search for Standard Deviation of Zero Failed. Exited the get_columns_with_zero_std_deviation method of the Preprocessor class')
+            
 
 
     
