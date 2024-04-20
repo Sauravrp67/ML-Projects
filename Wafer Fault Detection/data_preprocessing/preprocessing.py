@@ -96,11 +96,13 @@ class Preprocessor:
                 if i>0:
                     self.null_present = True
                     break
-            if (self.null_present):  # Write log to see which columns have null values
-                dataframe_with_null = pd.DataFrame()
-                dataframe_with_null['column'] = data.columns
-                dataframe_with_null['missing values count'] = np.asarray(data.isna().sum())
-                dataframe_with_null.to_csv('preprocessing_data/null_values.csv') # storing the null column information to file
+            # We check if any column contains any null values
+
+            if (self.null_present):  
+                df_with_null = pd.DataFrame()
+                df_with_null['column'] = data.columns
+                df_with_null['missing values count'] = np.asarray(data.isna().sum())
+                df_with_null.to_csv('preprocessing_data/null_values.csv') # storing the null column information to file
             self.logger_object.log(self.file_object,'FInding missing values is a success. Data written to the null values file. Exited the is_null_present method of the Preprocessor class')
             return self.null_present
         except Exception as e:
