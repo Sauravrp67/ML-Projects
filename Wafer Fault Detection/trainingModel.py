@@ -10,6 +10,9 @@ Revisions: None
 # Imports
 from application_logging import logger
 from data_ingestion import data_loader
+from data_preprocessing import preprocessing
+from data_preprocessing import clustering
+
 
 
 
@@ -21,4 +24,15 @@ class trainModel():
 
 
     def trainingModel(self):
-        pass
+        self.log_writer.log(self.file_object, "Start of training")
+
+        try:
+            #Getting the data from the source
+            data_getter = data_loader.Data_Getter(self.file_object, self.log_writer)
+            data = data_getter.get_data()
+
+            """doing the data preprocessing"""
+
+            preprocessor = preprocessing.Preprocessor(self.file_object, self.log_writer)
+        except Exception as e:
+            raise Exception()
